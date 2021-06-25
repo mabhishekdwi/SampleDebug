@@ -8,35 +8,12 @@ var jenkins = jenkinsapi.init(
   "http://" + JENKINS_USERNAME + ":" + JENKINS_PASSWORD + "@" + JENKINS_MASTER
 );
 
-export function getAllJobs() {
-  return new Promise((resolve, reject) => {
-    jenkins.all_jobs(function(err, data) {
-      if (err) {
-        reject(err);
-      } else {
-        var finalData = [];
-        if (data.length > 0) {
-          data.map(function(job) {
-            finalData.push({ name: job.name, url: job.url, color: job.color });
-          });
-        }
-        resolve(finalData);
-      }
-    });
-  });
+
+export default function (req, res) {
+    const build_number = req.body.build_number;
+    const jobName = req.body.job_name;
+    jenkins.build_info(jobName, build_number, function(err, data) {
+        if (err){ return console.log(err); }
+        console.log(data)
+      });
 }
-
-
-
-// exports.collectData = function(callback) {
-//   const getAllJobsPromise = getAllJobs();
-//   getAllJobsPromise
-//     .then(handleGetJobInfo)
-//     .then(handleGetAllBuilds)
-//     .then(data => {
-//       callback(data);
-//     })
-//     .catch(err => {
-//       callback("ERROR AT JENKINS");
-//     });
-// };
